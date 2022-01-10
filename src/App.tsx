@@ -57,7 +57,7 @@ export default function App() {
               <div>
                 <label
                   className={`block ${
-                    errors.email ? "text-red-400" : "text-gray-700"
+                    errors.firstName ? "text-red-400" : "text-gray-700"
                   }`}
                   htmlFor="Name"
                 >
@@ -79,7 +79,7 @@ export default function App() {
               <div className="mt-4">
                 <label
                   className={`block ${
-                    errors.email ? "text-red-400" : "text-gray-700"
+                    errors.lastName ? "text-red-400" : "text-gray-700"
                   }`}
                   htmlFor="lastName"
                 >
