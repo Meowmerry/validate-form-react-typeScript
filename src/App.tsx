@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 type IFormData = {
   firstName: string;
   lastName: string;
+  password: string;
+  confPassword: string;
   email: string;
 };
 
@@ -20,119 +22,151 @@ export default function App() {
 
   return (
     <React.Fragment>
-      <div className="w-full md:w-96 md:max-w-full mx-auto">
-        <div className="p-6 border border-gray-300 sm:rounded-md">
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
+          <h3 className="text-2xl font-bold text-center">Join us</h3>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <label
-              htmlFor="firstName"
-              className={`block font-bold text-sm mb-2 ${
-                errors.firstName ? "text-red-600" : "text-gray-700"
-              }`}
-            >
-              First Name
-            </label>
-            <input
-              className="
-            text-gray-600
-            border-gray-300
-            rounded
-            shadow-sm
-            focus:border-indigo-300
-            focus:ring
-            focus:ring-offset-0
-            focus:ring-indigo-200
-            focus:ring-opacity-50
-          "
-              placeholder="First Name"
-              {...register("firstName", {
-                required: "this is a required",
-              })}
-            />
-            <br />
-            {errors.firstName && errors.firstName.message}
-            <br />
-
-            <label
-              htmlFor="lastName"
-              className={`block font-bold text-sm mb-2 ${
-                errors.lastName ? "text-red-600" : "text-gray-700"
-              }`}
-            >
-              Last Name
-            </label>
-            <input
-              className="
-            text-gray-600
-            border-gray-300
-            rounded
-            shadow-sm
-            focus:border-indigo-300
-            focus:ring
-            focus:ring-offset-0
-            focus:ring-indigo-200
-            focus:ring-opacity-50
-          "
-              placeholder="last Name"
-              {...register("lastName", {
-                required: "this is required",
-              })}
-            />
-            <br />
-            <span className="text-red-600">
-              {errors.lastName && errors.lastName.message}
-            </span>
-            <br />
-
-            <label
-              htmlFor="email"
-              className={`block font-bold text-sm mb-2 ${
-                errors.email ? "text-red-600" : "text-gray-700"
-              }`}
-            >
-              Email
-            </label>
-            <input
-              className="
-            text-gray-600
-            border-gray-300
-            rounded
-            shadow-sm
-            focus:border-indigo-300
-            focus:ring
-            focus:ring-offset-0
-            focus:ring-indigo-200
-            focus:ring-opacity-50
-          "
-              placeholder="test@test.com"
-              type="text"
-              {...register("email", {
-                required: "this is required",
-                pattern: {
-                  value:
-                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                  message: "Invalid email address",
-                },
-              })}
-            />
-            <br />
-            {errors.email && errors.email.message}
-            <br />
-            <button
-              className="
-            h-10
-            px-5
-            text-indigo-100
-            bg-indigo-700
-            rounded-lg
-            transition-colors
-            duration-150
-            focus:shadow-outline
-            hover:bg-indigo-800
-          "
-              type="submit"
-            >
-              Submit
-            </button>
+            <div className="mt-4">
+              <div>
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="Name"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  autoFocus
+                  {...register("firstName", { required: "Enter First Name" })}
+                />
+                {errors.firstName && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.firstName.type === "required" &&
+                      "First name is required"}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="lastName"
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  autoFocus
+                  {...register("lastName", { required: true })}
+                />
+                {errors.firstName && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.lastName && "Last name is required"}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="email"
+                >
+                  Email
+                </label>
+                <input
+                  type="text"
+                  placeholder="email"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  {...register("email", {
+                    required: "email is required",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                      message: "Invalid email address",
+                    },
+                  })}
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.email && errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  {...register("password", {
+                    required: "this is required",
+                    minLength: {
+                      value: 2,
+                      message: "Min length is 2",
+                    },
+                  })}
+                />
+                {errors.password && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.password && errors.password.message}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                >
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  {...register("confPassword", {
+                    required: "this is required",
+                    minLength: {
+                      value: 2,
+                      message: "Min length is 2",
+                    },
+                  })}
+                />
+              </div>
+              {errors.confPassword && (
+                <p className="text-red-600 text-sm mt-2">
+                  {errors.confPassword && errors.confPassword.message}
+                </p>
+              )}
+              <span className="text-xs text-red-400">
+                Password must be same!
+              </span>
+              <div className="flex">
+                <button className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
+                  Create Account
+                </button>
+              </div>
+              <div className="mt-6 text-grey-dark">
+                Already have an account?
+                <a className="text-blue-600 hover:underline" href="#">
+                  Log in
+                </a>
+              </div>
+            </div>
           </form>
         </div>
       </div>
