@@ -1,121 +1,177 @@
 import React from "react";
-import "./form-input.css";
-interface FormInputProps {
-  placeholder?: string;
-  setUsername?: React.Dispatch<React.SetStateAction<string>>;
-  username?: string;
-}
-export const FormInput: React.FunctionComponent<FormInputProps> = (props) => {
-  const { placeholder, username, setUsername } = props;
-  return (
-    <div className="formInput">
-      {/* <label>Usermane</label> */}
-      <input
-        placeholder={placeholder}
-        onChange={(e) => {
-          if (setUsername) setUsername(e.target.value);
-        }}
-      />
-    </div>
-  );
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+
+type IFormData = {
+  firstName: string;
+  lastName: string;
+  password: string;
+  confPassword: string;
+  email: string;
 };
 
-// interface FormInputEmailProps {
-//   placeholder?: string;
-//   setEmail: React.Dispatch<React.SetStateAction<string>>;
-//   email: string;
-// }
+const validationSchema = Yup.object({
+  firstName: Yup.string().min(2).max(20).required("First name is required"),
+  lastName: Yup.string().required(),
+  password: Yup.string()
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+    )
+    .required(),
+  confPassword: Yup.string().test(
+    "passwords-match",
+    "Passwords must match",
+    function (value) {
+      return this.parent.password === value;
+    }
+  ),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+}).required();
 
-// export const FormInputEmail: React.FunctionComponent<FormInputEmailProps> = (
-//   props
-// ) => {
-//   const { placeholder, email, setEmail } = props;
-//   return (
-//     <div className="formInput">
-//       {/* <label>Usermane</label> */}
-//       <input
-//         placeholder={placeholder}
-//         onChange={(e) => setEmail(e.target.value)}
-//       />
-//     </div>
-//   );
-// };
-// interface FormInputFullNameProps {
-//   placeholder?: string;
-//   setFullName: React.Dispatch<React.SetStateAction<string>>;
-//   fullname: string;
-// }
-// export const FormInputFullName: React.FunctionComponent<
-//   FormInputFullNameProps
-// > = (props) => {
-//   const { placeholder, fullname, setFullName } = props;
-//   return (
-//     <div className="formInput">
-//       {/* <label>Usermane</label> */}
-//       <input
-//         placeholder={placeholder}
-//         onChange={(e) => setFullName(e.target.value)}
-//       />
-//     </div>
-//   );
-// };
+export default function FormValidate() {
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormData>({
+    resolver: yupResolver(validationSchema),
+  });
+  const onSubmit = (data: IFormData) => {
+    console.log(JSON.stringify(data));
+  };
 
-// interface FormInputBirthDateProps {
-//   placeholder?: string;
-//   setBirthDate: React.Dispatch<React.SetStateAction<string>>;
-//   birthdate: string;
-// }
-// export const FormInputBirthDate: React.FunctionComponent<
-//   FormInputBirthDateProps
-// > = (props) => {
-//   const { placeholder, birthdate, setBirthDate } = props;
-//   return (
-//     <div className="formInput">
-//       {/* <label>Usermane</label> */}
-//       <input
-//         placeholder={placeholder}
-//         onChange={(e) => setBirthDate(e.target.value)}
-//       />
-//     </div>
-//   );
-// };
+  return (
+    <React.Fragment>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
+          <h3 className="text-2xl font-bold text-center">Join us</h3>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="mt-4">
+              <div>
+                <label
+                  className={`block ${
+                    errors.firstName ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="Name"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  autoFocus
+                  {...register("firstName")}
+                />
+                {errors.firstName && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.firstName && errors.firstName.message}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.lastName ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="lastName"
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  autoFocus
+                  {...register("lastName", { required: true })}
+                />
+                {errors.firstName && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.lastName && "Last name is required"}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                  htmlFor="email"
+                >
+                  Email
+                </label>
+                <input
+                  type="text"
+                  placeholder="email"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.email && errors.email.message}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.password && errors.password.message}
+                  </p>
+                )}
+              </div>
+              <div className="mt-4">
+                <label
+                  className={`block ${
+                    errors.email ? "text-red-400" : "text-gray-700"
+                  }`}
+                >
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
+                  {...register("confPassword")}
+                />
+                {errors.confPassword && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.confPassword && errors.confPassword.message}
+                  </p>
+                )}
+              </div>
 
-// interface FormInputPasswordProps {
-//   placeholder?: string;
-//   setPassword: React.Dispatch<React.SetStateAction<string>>;
-//   password: string;
-// }
-// export const FormInputPassword: React.FunctionComponent<
-//   FormInputPasswordProps
-// > = (props) => {
-//   const { placeholder, password, setPassword } = props;
-//   return (
-//     <div className="formInput">
-//       {/* <label>Usermane</label> */}
-//       <input
-//         placeholder={placeholder}
-//         onChange={(e) => setPassword(e.target.value)}
-//       />
-//     </div>
-//   );
-// };
-
-// interface FormInputConfirmPasswordProps {
-//   placeholder?: string;
-//   setConfirmPassword: React.Dispatch<React.SetStateAction<string>>;
-//   confirmpassword: string;
-// }
-// export const FormInputConfirmPassword: React.FunctionComponent<
-//   FormInputConfirmPasswordProps
-// > = (props) => {
-//   const { placeholder, confirmpassword, setConfirmPassword } = props;
-//   return (
-//     <div className="formInput">
-//       {/* <label>Usermane</label> */}
-//       <input
-//         placeholder={placeholder}
-//         onChange={(e) => setConfirmPassword(e.target.value)}
-//       />
-//     </div>
-//   );
-// };
+              <div className="flex">
+                <button className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
+                  Create Account
+                </button>
+              </div>
+              <div className="mt-6 text-grey-dark">
+                Already have an account?
+                <a className="text-blue-600 hover:underline" href="#">
+                  Log in
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
