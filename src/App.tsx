@@ -1,5 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from 'yup';
 
 type IFormData = {
   firstName: string;
@@ -9,13 +11,38 @@ type IFormData = {
   email: string;
 };
 
+const validationSchema = Yup
+  .object({
+    firstName: Yup.string().min(2).max(20).required("First name is required"),
+    lastName: Yup.string().required(),
+    password: Yup
+      .string()
+      .matches(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+      )
+      .required(),
+    confPassword: Yup
+      .string()
+      .test("passwords-match", "Passwords must match", function (value) {
+        return this.parent.password === value;
+      }),
+    email: Yup
+      .string()
+      .email("Invalid email format")
+      .required("Email is required"),
+  })
+  .required();
+
 export default function App() {
   const {
     register,
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormData>();
+  } = useForm<IFormData>({
+    resolver: yupResolver(validationSchema),
+  });
   const onSubmit = (data: IFormData) => {
     console.log(JSON.stringify(data));
   };
@@ -41,12 +68,11 @@ export default function App() {
                   placeholder="Name"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                   autoFocus
-                  {...register("firstName", { required: "Enter First Name" })}
+                  {...register("firstName")}
                 />
                 {errors.firstName && (
                   <p className="text-red-600 text-sm mt-2">
-                    {errors.firstName.type === "required" &&
-                      "First name is required"}
+                    {errors.firstName && errors.firstName.message}
                   </p>
                 )}
               </div>
@@ -85,14 +111,6 @@ export default function App() {
                   type="text"
                   placeholder="email"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                  {...register("email", {
-                    required: "email is required",
-                    pattern: {
-                      value:
-                        /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                      message: "Invalid email address",
-                    },
-                  })}
                 />
                 {errors.email && (
                   <p className="text-red-600 text-sm mt-2">
@@ -112,13 +130,7 @@ export default function App() {
                   type="password"
                   placeholder="Password"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                  {...register("password", {
-                    required: "this is required",
-                    minLength: {
-                      value: 2,
-                      message: "Min length is 2",
-                    },
-                  })}
+                  {...register("password")}
                 />
                 {errors.password && (
                   <p className="text-red-600 text-sm mt-2">
@@ -138,23 +150,15 @@ export default function App() {
                   type="password"
                   placeholder="Password"
                   className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                  {...register("confPassword", {
-                    required: "this is required",
-                    minLength: {
-                      value: 2,
-                      message: "Min length is 2",
-                    },
-                  })}
+                  {...register("confPassword")}
                 />
+                {errors.confPassword && (
+                  <p className="text-red-600 text-sm mt-2">
+                    {errors.confPassword && errors.confPassword.message}
+                  </p>
+                )}
               </div>
-              {errors.confPassword && (
-                <p className="text-red-600 text-sm mt-2">
-                  {errors.confPassword && errors.confPassword.message}
-                </p>
-              )}
-              <span className="text-xs text-red-400">
-                Password must be same!
-              </span>
+
               <div className="flex">
                 <button className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">
                   Create Account
